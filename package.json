@@ -1,5 +1,8 @@
 {
   "type": "module",
+  "scripts": {
+    "start": "index.html"
+  },
   "dependencies": {
     "fuse.js": "^7.1.0"
   }
