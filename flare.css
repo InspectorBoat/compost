@@ -5,3 +5,17 @@ body {
   color: #fff;
   font-family: Arial, Helvetica, sans-serif;
 }
+
+#suggestions, #suggestions .sugg {
+  color: #000;
+}
+
+#suggestions .sugg {
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+#suggestions .sugg:hover, #suggestions .sugg:focus {
+  background: #f0f0f0;
+  outline: none;
+}
