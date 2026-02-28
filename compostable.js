@@ -9,7 +9,9 @@ async function ensureLoaded() {
   fuse = new Fuse(database, { keys: ['item'], threshold: 0.3 });
 }
 
-export function findWasteCategory(userInput) {
+ensureLoaded().catch(e => console.error(e));
+
+export function findWasteCategoryByLocation(location, userInput) {
   if (!fuse) {
     ensureLoaded();
     return 'Loading database — please try again in a moment.';
@@ -18,10 +20,16 @@ export function findWasteCategory(userInput) {
   const results = fuse.search(userInput);
   if (results.length === 0) return 'Item not found.';
 
-  const match = results[0].item;
+  const match = results.find(m => m.state == location);
   if (match.is_compost) return `Compost (${match.compost_type})`;
   if (match.is_recyclable) return 'Recyclable';
   return 'Trash';
 }
 
-ensureLoaded().catch(() => {});
+export function getLocation(userInput) {
+    const location = locationFuse.search(userInput);
+    if (results.length === 0) return "Location not found.";
+    return location;
+}
+
+console.log(findWasteCategory("banana peel"));
