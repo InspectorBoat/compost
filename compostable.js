@@ -1,9 +1,6 @@
 import  wasteDatabase  from "./wasteDatabase.json" assert { type: 'json' };
 import Fuse from "fuse.js";
 
-const search_greens = new Fuse(green_list);
-const search_browns = new Fuse(brown_list);
-
 const fuse = new Fuse(wasteDatabase, {
   keys: ["item"],
   threshold: 0.3,
