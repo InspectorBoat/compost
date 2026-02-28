@@ -12,61 +12,77 @@
         <p>Compostable is an innovative new tool to help you sort your recycling, compost, and trash into the correct container depending on local regulations.</p>
         <h1>Waste lookup</h1>
                 <div style="position:relative; max-width:420px;">
-                    <input id="query" placeholder="Enter item" autocomplete="off" />
-                    <div id="suggestions" role="listbox" style="position:absolute;left:0;right:0;background:#fff;border:1px solid #ccc;display:none;z-index:10;max-height:200px;overflow:auto;"></div>
+                    <input id="item" placeholder="Enter item" autocomplete="off" />
+                    <div id="item_suggestions" tabindex=-1 role="listbox" style="position:absolute;left:0;right:0;background:#fff;border:1px solid #ccc;display:none;z-index:10;max-height:200px;overflow:auto;"></div>
+                </div>
+                <div style="position:relative; max-width:420px;">
+                    <input id="location" placeholder="Enter location" autocomplete="off" />
+                    <div id="location_suggestions" role="listbox" style="position:absolute;left:0;right:0;background:#fff;border:1px solid #ccc;display:none;z-index:10;max-height:200px;overflow:auto;"></div>
                 </div>
                 <button id="check">Check</button>
                 <p id="result">Result will appear here.</p>
     </center>
 
     <script type="module">
-                import { findWasteCategory } from './compostable.js';
+                import { findWasteCategory, findSuggestions } from './compostable.js';
 
-                const queryEl = document.getElementById('query');
-                const btn = document.getElementById('check');
-                const res = document.getElementById('result');
-                const suggestionsEl = document.getElementById('suggestions');
+                const itemInput = document.getElementById('item');
+                const locationInput = document.getElementById('location');
+                const checkButton = document.getElementById('check');
+                const resultField = document.getElementById('result');
+                const suggestionsDiv = document.getElementById('item_suggestions');
 
                 // simple debounce
-                function debounce(fn, wait=250){
+                function debounce(fn, wait = 250) {
                     let t;
-                    return (...args) => { clearTimeout(t); t = setTimeout(()=>fn(...args), wait); };
+                    return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), wait); };
                 }
 
-                async function updateSuggestions(q){
-                    if (!q) { suggestionsEl.style.display='none'; return; }
-                    const out = await findWasteCategory(q);
-                    if (out.matches && out.matches.length>0){
-                        suggestionsEl.innerHTML = out.matches.map(m => `<div role="option" tabindex="0" class="sugg">${m.item}</div>`).join('');
-                        suggestionsEl.style.display = 'block';
-                        Array.from(suggestionsEl.querySelectorAll('.sugg')).forEach(el => {
-                            el.addEventListener('click', () => { queryEl.value = el.textContent; suggestionsEl.style.display='none'; btn.click(); });
-                            el.addEventListener('keydown', (e)=>{ if(e.key==='Enter'){ el.click(); } });
+                async function updateSuggestions(partialItem) {
+                    if (partialItem === "") { suggestionsDiv.style.display = 'none'; return; }
+                    const suggestions = await findSuggestions(partialItem);
+                    console.log(suggestions);
+                    if (suggestions.length > 0) {
+                        suggestionsDiv.innerHTML = suggestions.map((m, i) => `<div role="option" tabindex="0" class="sugg">${m.item.item}</div>`).join('');
+                        suggestionsDiv.style.display = 'block';
+                        Array.from(suggestionsDiv.querySelectorAll('.sugg')).forEach(el => {
+                            el.addEventListener('click', () => {
+                                itemInput.value = el.textContent;
+                                suggestionsDiv.style.display='none';
+                            });
+                            el.addEventListener('keydown', (e) => {
+                                if (e.key === 'Enter') el.click();
+                            });
                         });
                     } else {
-                        suggestionsEl.style.display='none';
+                        suggestionsDiv.style.display = 'none';
                     }
                 }
 
-                const debounced = debounce((e)=> updateSuggestions(e.target.value.trim()));
-                queryEl.addEventListener('input', debounced);
+                // look for suggestions on input (after 250ms debounce)
+                itemInput.addEventListener('input', debounce(e => updateSuggestions(e.target.value.trim())));
 
                 // allow Enter to run search
-                queryEl.addEventListener('keydown', (e)=>{
+                itemInput.addEventListener('keydown', (e)=>{
                     if (e.key === 'Enter') { e.preventDefault(); btn.click(); }
                     if (e.key === 'ArrowDown') { const first = suggestionsEl.querySelector('.sugg'); if(first){ first.focus(); } }
                 });
 
-                btn.addEventListener('click', async () => {
-                        const q = queryEl.value.trim();
-                        if (!q) {
-                                res.textContent = 'Please enter an item.';
+                checkButton.addEventListener('click', async () => {
+                        const item = itemInput.value.trim();
+                        const location = locationInput.value.trim();
+                        if (!item) {
+                                resultField.textContent = 'Please enter an item.';
                                 return;
                         }
-                        res.textContent = 'Searching...';
-                        const out = await findWasteCategory(q);
-                        res.textContent = out.message || 'Item not found.';
-                        suggestionsEl.style.display='none';
+                        if (!location) {
+                                resultField.textContent = 'Please enter a location.';
+                                return;
+                        }
+                        resultField.textContent = 'Searching...';
+                        const wasteCategorySearch = await findWasteCategory(item);
+                        resultField.textContent = wasteCategorySearch.message || 'Item not found.';
+                        suggestionsDiv.style.display='none';
                 });
     </script>
 </body>

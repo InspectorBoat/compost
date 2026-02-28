@@ -21,14 +21,22 @@ async function ensureLoaded() {
 
 ensureLoaded().catch(e => console.error(e));
 
-export async function findWasteCategory(userInput) {
+export async function findSuggestions(partialItem) {
+  await ensureLoaded();
+  if (!partialItem) return null;
+  // fuzzy search and return top matches
+  return fuse.search(partialItem);
+}
+
+export async function findWasteCategory(userInput, location) {
   await ensureLoaded();
   if (!userInput) return { message: 'Please enter an item.' };
   // fuzzy search and return top matches
   const results = fuse.search(userInput);
   if (results.length === 0) return { message: 'Item not found.', matches: [] };
-
-  const match = results.find(m => m.state == location);
+  console.log(results);
+  // const match = results.find(m => m.state == location);
+  const match = results[0];
   let category = 'Trash';
   if (match.is_compost) category = `Compost (${match.compost_type || 'general'})`;
   else if (match.is_recyclable) category = 'Recyclable';
@@ -45,4 +53,4 @@ export function getLocation(userInput) {
     return location;
 }
 
-console.log(findWasteCategory("banana peel"));
+// console.log(findWasteCategory("banana peel"));
