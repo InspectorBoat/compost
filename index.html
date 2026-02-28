@@ -2,9 +2,28 @@
 <html>
 <head>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
-    <script src="compostable.js"></script>
 </head>
 <body>
-  <p>Blank</p>
+  <h1>Waste lookup</h1>
+  <input id="query" placeholder="Enter item" />
+  <button id="check">Check</button>
+  <p id="result">Result will appear here.</p>
+
+  <script type="module">
+    import { findWasteCategory } from './compostable.js';
+
+    const queryEl = document.getElementById('query');
+    const btn = document.getElementById('check');
+    const res = document.getElementById('result');
+
+    btn.addEventListener('click', () => {
+      const q = queryEl.value.trim();
+      if (!q) {
+        res.textContent = 'Please enter an item.';
+        return;
+      }
+      res.textContent = findWasteCategory(q);
+    });
+  </script>
 </body>
 </html>
