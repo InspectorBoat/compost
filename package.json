@@ -1,0 +1,6 @@
+{
+  "type": "module",
+  "dependencies": {
+    "fuse.js": "^7.1.0"
+  }
+}
