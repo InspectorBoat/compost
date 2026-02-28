@@ -18,7 +18,16 @@ async function ensureLoaded() {
   fuse = new Fuse(database, options);
 }
 
-export async function findWasteCategory(userInput) {
+ensureLoaded().catch(e => console.error(e));
+
+export async function findSuggestions(partialItem) {
+  await ensureLoaded();
+  if (!partialItem) return null;
+  // fuzzy search and return top matches
+  return fuse.search(partialItem);
+}
+
+export async function findWasteCategory(userInput, location) {
   await ensureLoaded();
   if (!userInput) return { message: "Please enter an item." };
 
@@ -43,4 +52,10 @@ export async function findWasteCategory(userInput) {
   };
 }
 
-ensureLoaded().catch(() => {});
+export function getLocation(userInput) {
+    const location = locationFuse.search(userInput);
+    if (results.length === 0) return "Location not found.";
+    return location;
+}
+
+// console.log(findWasteCategory("banana peel"));
