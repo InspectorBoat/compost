@@ -7,27 +7,30 @@
     <script src="https://cdn.jsdelivr.net/npm/fuse.js/dist/fuse.js"></script>
 </head>
 <body>
-  <p>Compostable is an innovative new tool to help you sort your recycling, compost, and trash into the correct container depending on local regulations.</p>
-  <h1>Waste lookup</h1>
-  <input id="query" placeholder="Enter item" />
-  <button id="check">Check</button>
-  <p id="result">Result will appear here.</p>
+    <center>
+    <h1>Welcome to Compostable!</h1>
+    <p>Compostable is an innovative new tool to help you sort your recycling, compost, and trash into the correct container depending on local regulations.</p>
+    <h1>Waste lookup</h1>
+    <input id="query" placeholder="Enter item" />
+    <button id="check">Check</button>
+    <p id="result">Result will appear here.</p>
+    </center>
 
-  <script type="module">
-    import { findWasteCategory } from './compostable.js';
+    <script type="module">
+        import { findWasteCategory } from './compostable.js';
 
-    const queryEl = document.getElementById('query');
-    const btn = document.getElementById('check');
-    const res = document.getElementById('result');
+        const queryEl = document.getElementById('query');
+        const btn = document.getElementById('check');
+        const res = document.getElementById('result');
 
-    btn.addEventListener('click', () => {
-      const q = queryEl.value.trim();
-      if (!q) {
-        res.textContent = 'Please enter an item.';
-        return;
-      }
-      res.textContent = findWasteCategory(q);
-    });
-  </script>
+        btn.addEventListener('click', () => {
+        const q = queryEl.value.trim();
+        if (!q) {
+            res.textContent = 'Please enter an item.';
+            return;
+        }
+        res.textContent = findWasteCategory(q);
+        });
+    </script>
 </body>
 </html>
