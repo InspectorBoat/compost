@@ -19,8 +19,6 @@ async function ensureLoaded() {
   fuse = new Fuse(database, options);
 }
 
-ensureLoaded().catch(e => console.error(e));
-
 export async function findWasteCategory(userInput) {
   await ensureLoaded();
   if (!userInput) return { message: 'Please enter an item.' };
