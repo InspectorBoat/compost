@@ -25,6 +25,13 @@
 
     <script type="module">
                 import { findWasteCategory, findSuggestions } from './compostable.js';
+                // `classifyWaste` now calls the server `/api/classify` so client-side keys are not required.
+                import { classifyWaste } from './gemini.js';
+
+                // Diagnostic logs to help trace module loading/errors.
+                console.log('[client] module loaded');
+                window.addEventListener('error', (e) => console.error('[client] window error', e.error || e.message));
+                window.addEventListener('unhandledrejection', (e) => console.error('[client] unhandledrejection', e.reason));
 
                 const itemInput = document.getElementById('item');
                 const locationInput = document.getElementById('location');
@@ -64,13 +71,15 @@
 
                 // allow Enter to run search
                 itemInput.addEventListener('keydown', (e)=>{
-                    if (e.key === 'Enter') { e.preventDefault(); btn.click(); }
-                    if (e.key === 'ArrowDown') { const first = suggestionsEl.querySelector('.sugg'); if(first){ first.focus(); } }
+                    if (e.key === 'Enter') { e.preventDefault(); checkButton.click(); }
+                    if (e.key === 'ArrowDown') { const first = suggestionsDiv.querySelector('.sugg'); if(first){ first.focus(); } }
                 });
 
                 checkButton.addEventListener('click', async () => {
-                        const item = itemInput.value.trim();
-                        const location = locationInput.value.trim();
+                    console.log('[client] checkButton clicked');
+                    const item = itemInput.value.trim();
+                    const location = locationInput.value.trim();
+                    console.log('[client] inputs', { item, location });
                         if (!item) {
                                 resultField.textContent = 'Please enter an item.';
                                 return;
@@ -80,8 +89,9 @@
                                 return;
                         }
                         resultField.textContent = 'Searching...';
-                        const wasteCategorySearch = await findWasteCategory(item);
-                        resultField.textContent = wasteCategorySearch.message || 'Item not found.';
+                    const wasteCategorySearch = await findWasteCategory(item, location);
+                    console.log('[client] findWasteCategory result', wasteCategorySearch);
+                    resultField.textContent = wasteCategorySearch.message || 'Item not found.';
                         suggestionsDiv.style.display='none';
                 });
     </script>

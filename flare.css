@@ -6,16 +6,16 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-#suggestions, #suggestions .sugg {
+#item_suggestions, #item_suggestions .sugg {
   color: #000;
 }
 
-#suggestions .sugg {
+#item_suggestions .sugg {
   padding: 8px 10px;
   cursor: pointer;
 }
 
-#suggestions .sugg:hover, #suggestions .sugg:focus {
+#item_suggestions .sugg:hover, #item_suggestions .sugg:focus {
   background: #f0f0f0;
   outline: none;
 }
